@@ -55,54 +55,54 @@ const UI = {
 
     openFormModal(type) {
         const isUrgent = type === 'urgent';
-        const title = isUrgent ? 'NEW_URGENT_PRAYER' : 'NEW_ANNUAL_PRAYER';
+        const title = isUrgent ? '간절한 기도 등록' : '연간 기도 등록';
         
         const formHtml = `
             <form id="prayer-form">
                 ${!isUrgent ? `
                     <div class="input-group">
-                        <label>TARGET_YEAR</label>
+                        <label>목표 연도</label>
                         <input type="number" name="year" value="${new Date().getFullYear()}" required>
                     </div>
                 ` : ''}
                 
                 <div class="input-group">
-                    <label>PRAYER_CONTENT</label>
-                    <textarea name="title" rows="3" placeholder="기도 내용을 입력하십시오" required></textarea>
+                    <label>기도 내용</label>
+                    <textarea name="title" rows="3" placeholder="기도하고 싶은 내용을 적어주세요" required></textarea>
                 </div>
 
                 ${isUrgent ? `
                     <div class="input-group">
-                        <label>DEADLINE_DATE</label>
+                        <label>목표 날짜</label>
                         <input type="date" name="deadline" required>
                     </div>
                 ` : ''}
 
                 <div class="input-group">
-                    <label>FREQUENCY_INFO</label>
-                    <input type="text" name="cycle" placeholder="예: DAILY_2100, MON_WED_FRI" required>
+                    <label>기도 주기</label>
+                    <input type="text" name="cycle" placeholder="예: 매일 저녁 9시, 월/수/금 등" required>
                 </div>
 
                 <div class="input-group">
-                    <label>VISIBILITY_SCOPE</label>
+                    <label>공개 여부</label>
                     <select name="isPublic">
-                        <option value="private">PRIVATE</option>
-                        <option value="public">PUBLIC</option>
+                        <option value="private">비공개 (개인용)</option>
+                        <option value="public">공개 (나눔용)</option>
                     </select>
                 </div>
 
                 ${(!isUrgent) ? `
                     <div class="input-group" id="past-status-group" style="display:none;">
-                        <label>CURRENT_STATUS</label>
+                        <label>현재 상태</label>
                         <select name="status">
-                            <option value="praying">STILL_PRAYING</option>
-                            <option value="answered">ANSWERED</option>
-                            <option value="letgo">LET_GO</option>
+                            <option value="praying">아직 기도 중</option>
+                            <option value="answered">응답 받음</option>
+                            <option value="letgo">내려놓음</option>
                         </select>
                     </div>
                 ` : ''}
 
-                <button type="submit" class="submit-btn">EXECUTE.SAVE()</button>
+                <button type="submit" class="submit-btn">저장하기</button>
             </form>
         `;
 
@@ -132,7 +132,7 @@ const UI = {
                         body: JSON.stringify(prayerData),
                         headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' }
                     });
-                } catch (err) { console.error("Formspree error", err); }
+                } catch (err) { console.error("전송 중 오류 발생", err); }
             }
 
             this.closeModal();
@@ -145,11 +145,11 @@ const UI = {
         this.main.innerHTML = `
             <div class="list-container">
                 <header class="console-header" style="text-align:left; margin-bottom: 2rem;">
-                    <h1>QUERY_RESULT: PRAYER_LOGS</h1>
-                    <p>시스템에 저장된 모든 기도 로그를 나열합니다.</p>
+                    <h1>기도 목록 확인</h1>
+                    <p>시스템에 저장된 소중한 기도 제목들입니다.</p>
                 </header>
                 <div class="prayer-list">
-                    ${prayers.length === 0 ? '<p style="padding: 2rem; border: 1px dashed var(--border); text-align:center;">EMPTY_RESULT: 데이터가 없습니다.</p>' : ''}
+                    ${prayers.length === 0 ? '<p style="padding: 2rem; border: 1px dashed var(--border); text-align:center;">저장된 기도 내용이 없습니다.</p>' : ''}
                     ${prayers.map(p => this.createPrayerItemTemplate(p)).join('')}
                 </div>
             </div>
@@ -168,12 +168,12 @@ const UI = {
         if (p.type === 'urgent' && p.deadline) {
             const diff = new Date(p.deadline) - new Date();
             const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
-            dDayText = `<span class="badge">D${days >= 0 ? '-' : '+'}${Math.abs(days)}</span>`;
+            dDayText = `<span class="badge">남은 기간: ${days >= 0 ? days + '일' : '+' + Math.abs(days) + '일 경과'}</span>`;
         } else if (p.type === 'annual') {
             const endOfYear = new Date(p.year || new Date().getFullYear(), 11, 31);
             const diff = endOfYear - new Date();
             const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
-            dDayText = `<span class="badge">REMAINING: ${days}d</span>`;
+            dDayText = `<span class="badge">올해 남은 날: ${days}일</span>`;
         }
 
         return `
@@ -181,15 +181,16 @@ const UI = {
                 <div class="p-info">
                     <div class="p-header">
                         ${dDayText}
-                        <span class="badge">${p.type.toUpperCase()} ${p.year || ''}</span>
-                        ${p.answered ? '<span class="badge" style="background: #dcfce7; color: #166534;">ANSWERED</span>' : ''}
+                        <span class="badge">${p.type === 'urgent' ? '집중' : p.year + ' 연간'}</span>
+                        ${p.answered ? '<span class="badge" style="background: #dcfce7; color: #166534;">응답 완료</span>' : ''}
                     </div>
                     <h3 class="p-title">${p.title}</h3>
-                    <p class="p-cycle">CYCLE: ${p.cycle} | SCOPE: ${p.isPublic.toUpperCase()}</p>
+                    <p class="p-cycle">주기: ${p.cycle} | 공개: ${p.isPublic === 'public' ? '공개' : '비공개'}</p>
+                    ${p.answerContent ? `<div style="margin-top: 0.5rem; font-size: 0.85rem; color: #166534; background: #f0fdf4; padding: 0.5rem; border-radius: 4px;">✨ 응답: ${p.answerContent}</div>` : ''}
                 </div>
                 <div class="p-actions">
-                    <button class="action-btn btn-edit" data-id="${p.id}">EDIT</button>
-                    <button class="action-btn btn-answer" data-id="${p.id}">${p.answered ? 'LOG_UPDATE' : 'RECORD_ANSWER'}</button>
+                    <button class="action-btn btn-edit" data-id="${p.id}">수정</button>
+                    <button class="action-btn btn-answer" data-id="${p.id}">${p.answered ? '응답 수정' : '응답 기록'}</button>
                 </div>
             </div>
         `;
@@ -197,18 +198,18 @@ const UI = {
 
     openEditModal(id) {
         const p = store.getAll().find(item => item.id === id);
-        this.showModal('EDIT_ENTRY', `
+        this.showModal('기도 내용 수정', `
             <form id="edit-form">
                 <div class="input-group">
-                    <label>CONTENT</label>
+                    <label>기도 내용</label>
                     <textarea name="title" rows="4" required>${p.title}</textarea>
                 </div>
                 <div class="input-group">
-                    <label>CYCLE</label>
+                    <label>기도 주기</label>
                     <input type="text" name="cycle" value="${p.cycle}" required>
                 </div>
-                <button type="submit" class="submit-btn">UPDATE.COMMIT()</button>
-                <button type="button" id="btn-delete" style="margin-top: 0.5rem; background: #fee2e2; color: #991b1b; border: 1px solid #f87171;" class="submit-btn">DELETE.REMOVE()</button>
+                <button type="submit" class="submit-btn">수정 완료</button>
+                <button type="button" id="btn-delete" style="margin-top: 0.5rem; background: #fee2e2; color: #991b1b; border: 1px solid #f87171;" class="submit-btn">기도 제목 삭제</button>
             </form>
         `);
 
@@ -220,7 +221,7 @@ const UI = {
         };
 
         document.getElementById('btn-delete').onclick = () => {
-            if (confirm('삭제하시겠습니까?')) {
+            if (confirm('정말 삭제하시겠습니까?')) {
                 store.delete(id);
                 this.closeModal();
                 this.renderList();
@@ -230,17 +231,17 @@ const UI = {
 
     openAnswerModal(id) {
         const p = store.getAll().find(item => item.id === id);
-        this.showModal('RECORD_ANSWER', `
+        this.showModal('기도 응답 기록', `
             <form id="answer-form">
                 <div class="input-group">
-                    <label>ANSWER_DETAILS</label>
-                    <textarea name="answerContent" rows="4" placeholder="응답 내용을 기록하십시오" required>${p.answerContent || ''}</textarea>
+                    <label>응답 내용</label>
+                    <textarea name="answerContent" rows="4" placeholder="하나님이 어떻게 응답하셨나요?" required>${p.answerContent || ''}</textarea>
                 </div>
                 <div class="input-group">
-                    <label>DATE_STAMP</label>
+                    <label>응답 날짜</label>
                     <input type="date" name="answerDate" value="${p.answerDate || new Date().toISOString().split('T')[0]}" required>
                 </div>
-                <button type="submit" class="submit-btn">ANSWER.SAVE()</button>
+                <button type="submit" class="submit-btn">응답 저장하기</button>
             </form>
         `);
 

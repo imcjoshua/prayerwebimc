@@ -45,6 +45,12 @@ body {
     cursor: pointer;
 }
 
+.nav-actions {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+}
+
 .nav-btn {
     background: var(--text);
     color: white;
@@ -54,6 +60,28 @@ body {
     font-size: 0.75rem;
     cursor: pointer;
     border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.nav-btn.primary {
+    background: var(--primary);
+}
+
+.nav-btn.primary:hover {
+    filter: brightness(1.1);
+}
+
+.user-profile {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+.profile-img {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
 }
 
 /* 홈 레이아웃 */

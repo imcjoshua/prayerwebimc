@@ -1,56 +1,102 @@
-// 데이터 관리 클래스
+// Firebase Configuration (사용자 설정 필요)
+const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_PROJECT_ID.appspot.com",
+    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+    appId: "YOUR_APP_ID"
+};
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+const googleProvider = new firebase.auth.GoogleAuthProvider();
+
+// 데이터 관리 클래스 (Firestore 기반)
 class PrayerStore {
     constructor() {
-        this.key = 'prayer_requests';
+        this.collection = 'prayers';
     }
 
-    getAll() {
-        const data = localStorage.getItem(this.key);
-        return data ? JSON.parse(data) : [];
+    async getAll(userId) {
+        if (!userId) return [];
+        const snapshot = await db.collection(this.collection)
+            .where('userId', '==', userId)
+            .orderBy('createdAt', 'desc')
+            .get();
+        return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     }
 
-    save(prayer) {
-        const prayers = this.getAll();
+    async save(prayer, userId) {
+        if (!userId) return null;
         const newPrayer = {
-            id: Date.now(),
+            userId: userId,
             createdAt: new Date().toISOString(),
             answered: false,
             answerContent: '',
             answerDate: '',
             ...prayer
         };
-        prayers.push(newPrayer);
-        localStorage.setItem(this.key, JSON.stringify(prayers));
-        return newPrayer;
+        const docRef = await db.collection(this.collection).add(newPrayer);
+        return { id: docRef.id, ...newPrayer };
     }
 
-    update(id, updatedFields) {
-        let prayers = this.getAll();
-        prayers = prayers.map(p => p.id === id ? { ...p, ...updatedFields } : p);
-        localStorage.setItem(this.key, JSON.stringify(prayers));
+    async update(id, updatedFields) {
+        await db.collection(this.collection).doc(id).update(updatedFields);
     }
 
-    delete(id) {
-        let prayers = this.getAll();
-        prayers = prayers.filter(p => p.id !== id);
-        localStorage.setItem(this.key, JSON.stringify(prayers));
+    async delete(id) {
+        await db.collection(this.collection).doc(id).delete();
     }
 }
 
 const store = new PrayerStore();
+let currentUser = null;
 
 // UI 관리자
 const UI = {
     main: document.getElementById('main-content'),
     modal: document.getElementById('modal-overlay'),
 
+    init() {
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                currentUser = user;
+                document.getElementById('btn-login').classList.add('hidden');
+                document.getElementById('user-profile').classList.remove('hidden');
+                document.getElementById('user-photo').src = user.photoURL;
+                this.renderHome();
+            } else {
+                currentUser = null;
+                document.getElementById('btn-login').classList.remove('hidden');
+                document.getElementById('user-profile').classList.add('hidden');
+                this.renderHome();
+            }
+        });
+
+        document.getElementById('btn-login').onclick = () => auth.signInWithPopup(googleProvider);
+        document.getElementById('btn-logout').onclick = () => auth.signOut();
+        document.getElementById('close-modal').onclick = () => this.closeModal();
+        document.getElementById('go-home').onclick = () => this.renderHome();
+        document.getElementById('btn-view-list-nav').onclick = () => this.renderList();
+        window.onclick = (e) => { if (e.target === UI.modal) UI.closeModal(); };
+    },
+
     renderHome() {
         const template = document.getElementById('home-view');
         this.main.innerHTML = '';
         this.main.appendChild(template.content.cloneNode(true));
 
-        document.getElementById('btn-urgent').onclick = () => this.openFormModal('urgent');
-        document.getElementById('btn-annual').onclick = () => this.openFormModal('annual');
+        document.getElementById('btn-urgent').onclick = () => {
+            if (!currentUser) return alert('로그인이 필요한 기능입니다.');
+            this.openFormModal('urgent');
+        };
+        document.getElementById('btn-annual').onclick = () => {
+            if (!currentUser) return alert('로그인이 필요한 기능입니다.');
+            this.openFormModal('annual');
+        };
     },
 
     openFormModal(type) {
@@ -65,24 +111,20 @@ const UI = {
                         <input type="number" name="year" value="${new Date().getFullYear()}" required>
                     </div>
                 ` : ''}
-                
                 <div class="input-group">
                     <label>기도 내용</label>
                     <textarea name="title" rows="3" placeholder="기도하고 싶은 내용을 적어주세요" required></textarea>
                 </div>
-
                 ${isUrgent ? `
                     <div class="input-group">
                         <label>목표 날짜</label>
                         <input type="date" name="deadline" required>
                     </div>
                 ` : ''}
-
                 <div class="input-group">
                     <label>기도 주기</label>
                     <input type="text" name="cycle" placeholder="예: 매일 저녁 9시, 월/수/금 등" required>
                 </div>
-
                 <div class="input-group">
                     <label>공개 여부</label>
                     <select name="isPublic">
@@ -90,7 +132,6 @@ const UI = {
                         <option value="public">공개 (나눔용)</option>
                     </select>
                 </div>
-
                 ${(!isUrgent) ? `
                     <div class="input-group" id="past-status-group" style="display:none;">
                         <label>현재 상태</label>
@@ -101,14 +142,12 @@ const UI = {
                         </select>
                     </div>
                 ` : ''}
-
                 <button type="submit" class="submit-btn">저장하기</button>
             </form>
         `;
 
         this.showModal(title, formHtml);
 
-        // 과거 연도 입력 시 상태 필드 보여주기 로직
         if (!isUrgent) {
             const yearInput = document.querySelector('input[name="year"]');
             const statusGroup = document.getElementById('past-status-group');
@@ -123,7 +162,7 @@ const UI = {
             const prayerData = Object.fromEntries(formData.entries());
             prayerData.type = type;
 
-            store.save(prayerData);
+            await store.save(prayerData, currentUser.uid);
 
             if (isUrgent) {
                 try {
@@ -132,7 +171,7 @@ const UI = {
                         body: JSON.stringify(prayerData),
                         headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' }
                     });
-                } catch (err) { console.error("전송 중 오류 발생", err); }
+                } catch (err) { console.error("전송 오류", err); }
             }
 
             this.closeModal();
@@ -140,13 +179,15 @@ const UI = {
         };
     },
 
-    renderList() {
-        const prayers = store.getAll();
+    async renderList() {
+        if (!currentUser) return alert('로그인 후 이용 가능합니다.');
+        
+        const prayers = await store.getAll(currentUser.uid);
         this.main.innerHTML = `
             <div class="list-container">
                 <header class="console-header" style="text-align:left; margin-bottom: 2rem;">
-                    <h1>기도 목록 확인</h1>
-                    <p>시스템에 저장된 소중한 기도 제목들입니다.</p>
+                    <h1>나의 기도 목록</h1>
+                    <p>${currentUser.displayName}님의 소중한 기도 제목들입니다.</p>
                 </header>
                 <div class="prayer-list">
                     ${prayers.length === 0 ? '<p style="padding: 2rem; border: 1px dashed var(--border); text-align:center;">저장된 기도 내용이 없습니다.</p>' : ''}
@@ -156,10 +197,10 @@ const UI = {
         `;
 
         this.main.querySelectorAll('.btn-edit').forEach(btn => {
-            btn.onclick = () => this.openEditModal(Number(btn.dataset.id));
+            btn.onclick = () => this.openEditModal(btn.dataset.id);
         });
         this.main.querySelectorAll('.btn-answer').forEach(btn => {
-            btn.onclick = () => this.openAnswerModal(Number(btn.dataset.id));
+            btn.onclick = () => this.openAnswerModal(btn.dataset.id);
         });
     },
 
@@ -196,8 +237,9 @@ const UI = {
         `;
     },
 
-    openEditModal(id) {
-        const p = store.getAll().find(item => item.id === id);
+    async openEditModal(id) {
+        const prayers = await store.getAll(currentUser.uid);
+        const p = prayers.find(item => item.id === id);
         this.showModal('기도 내용 수정', `
             <form id="edit-form">
                 <div class="input-group">
@@ -213,24 +255,25 @@ const UI = {
             </form>
         `);
 
-        document.getElementById('edit-form').onsubmit = (e) => {
+        document.getElementById('edit-form').onsubmit = async (e) => {
             e.preventDefault();
-            store.update(id, { title: e.target.title.value, cycle: e.target.cycle.value });
+            await store.update(id, { title: e.target.title.value, cycle: e.target.cycle.value });
             this.closeModal();
             this.renderList();
         };
 
-        document.getElementById('btn-delete').onclick = () => {
+        document.getElementById('btn-delete').onclick = async () => {
             if (confirm('정말 삭제하시겠습니까?')) {
-                store.delete(id);
+                await store.delete(id);
                 this.closeModal();
                 this.renderList();
             }
         };
     },
 
-    openAnswerModal(id) {
-        const p = store.getAll().find(item => item.id === id);
+    async openAnswerModal(id) {
+        const prayers = await store.getAll(currentUser.uid);
+        const p = prayers.find(item => item.id === id);
         this.showModal('기도 응답 기록', `
             <form id="answer-form">
                 <div class="input-group">
@@ -245,9 +288,9 @@ const UI = {
             </form>
         `);
 
-        document.getElementById('answer-form').onsubmit = (e) => {
+        document.getElementById('answer-form').onsubmit = async (e) => {
             e.preventDefault();
-            store.update(id, { 
+            await store.update(id, { 
                 answered: true, 
                 answerContent: e.target.answerContent.value, 
                 answerDate: e.target.answerDate.value 
@@ -268,10 +311,5 @@ const UI = {
     }
 };
 
-// 초기화
-document.getElementById('close-modal').onclick = () => UI.closeModal();
-document.getElementById('go-home').onclick = () => UI.renderHome();
-document.getElementById('btn-view-list-nav').onclick = () => UI.renderList();
-window.onclick = (e) => { if (e.target === UI.modal) UI.closeModal(); };
-
-UI.renderHome();
+// 앱 시작
+UI.init();

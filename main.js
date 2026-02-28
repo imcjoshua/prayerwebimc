@@ -238,32 +238,30 @@ const UI = {
         }
 
         const statusBadge = p.answered ? `<span class="badge success">ANSWERED</span>` : '';
+        const visibility = p.isPublic === 'public' ? '공개기도' : '비공개';
 
         return `
             <div class="prayer-item">
-                <div class="p-header">
-                    ${typeBadge}
-                    ${statusBadge}
-                    <span style="font-family: var(--mono); font-size: 0.65rem; color: var(--text-muted); margin-top: 0.2rem;">
-                        ${new Date(p.createdAt).toISOString().split('T')[0]}
-                    </span>
-                </div>
-                
                 <div class="p-content">
                     <h3 class="p-title">${p.title}</h3>
-                    <div class="p-cycle">
-                        <span>● CYCLE: ${p.cycle}</span>
-                        <span style="margin-left: 0.5rem;">● ACCESS: ${p.isPublic === 'public' ? 'PUBLIC' : 'PRIVATE'}</span>
+                    <div class="p-info-row" style="display: flex; align-items: center; gap: 0.6rem; margin-top: 0.3rem; opacity: 0.8; font-size: 0.75rem;">
+                        <span style="font-family: var(--mono); color: var(--text-muted);">${new Date(p.createdAt).toISOString().split('T')[0]}</span>
+                        <span style="color: var(--text-muted);">● ${p.cycle}</span>
+                        <span style="color: var(--primary); font-weight: 600;">● ${visibility}</span>
+                        <div style="display: flex; gap: 0.3rem; margin-left: auto;">
+                            ${typeBadge}
+                            ${statusBadge}
+                        </div>
                     </div>
                     ${p.answerContent ? `
-                        <div class="p-answer-box">
+                        <div class="p-answer-box" style="margin-top: 0.5rem; font-size: 0.85rem;">
                             <span style="font-weight: 800; font-family: var(--mono); font-size: 0.65rem; display: block; margin-bottom: 0.2rem;">>>> RESPONSE RECEIVED</span>
                             ${p.answerContent}
                         </div>
                     ` : ''}
                 </div>
 
-                <div class="p-actions">
+                <div class="p-actions" style="align-self: center; margin-left: 1rem;">
                     <button class="action-btn edit btn-edit" data-id="${p.id}">EDIT</button>
                     <button class="action-btn answer btn-answer" data-id="${p.id}">${p.answered ? 'RE-LOG' : 'RESOLVE'}</button>
                 </div>

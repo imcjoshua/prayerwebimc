@@ -1,33 +1,44 @@
-# Lotto Number Generator
+# Prayer Web - 내 마음의 기도
 
 ## Overview
 
-This is a simple web application that generates and displays a set of random lottery numbers. It's built using modern web technologies, including Web Components, to create a clean and interactive user experience.
+Prayer Web은 개인의 기도 제목을 등록하고, 기도의 응답을 기록하며 영적 성장을 돕는 웹 애플리케이션입니다. Google 로그인을 통해 개인별로 안전하게 데이터를 관리하며, Firebase Cloud Firestore를 연동하여 실시간 데이터 저장을 지원합니다.
 
 ## Project Outline
 
 ### Style and Design
 
-*   **Layout:** A centered, clean layout that is responsive and works well on both mobile and desktop screens.
-*   **Color Palette:** A vibrant and energetic color scheme will be used for the lottery balls to make them visually appealing. The background will have a subtle texture.
-*   **Typography:** Clear and readable fonts will be used for the title and the numbers.
+*   **Layout:** 현대적인 카드 기반 레이아웃을 사용하며, 모바일과 데스크톱 모두에 최적화된 반응형 UI를 제공합니다.
+*   **Color Palette:** 신뢰감과 평안을 주는 블루와 파스텔 톤을 사용하며, '집중 기도'는 레드, '연간 기도'는 블루 계열의 배지를 통해 구분합니다.
+*   **Typography:** 'Pretendard' 폰트를 사용하여 가독성을 높이고 명확한 위계 질서를 유지합니다.
 *   **Visual Effects:**
-    *   The lottery balls will have a multi-layered drop shadow to create a sense of depth.
-    *   The "Generate" button will have a "glow" effect on interaction.
-    *   An animation will be used to reveal the generated numbers.
+    *   기도 아이템 카드에 부드러운 그림자와 테두리를 적용하여 깊이감을 줍니다.
+    *   응답 완료된 기도는 녹색 계열의 배경과 체크 표시(✨)를 통해 성취감을 줍니다.
+    *   상호작용 시 미세한 애니메이션 효과를 적용합니다.
 
 ### Features
 
-*   **Lottery Number Generation:** Generates 6 unique random numbers between 1 and 45.
-*   **Web Component:** A `<lotto-ball>` custom element is used to display each number, encapsulating its style and behavior.
-*   **Interactive Button:** A button to trigger the generation of a new set of numbers.
+*   **Google Login:** Firebase Auth를 통한 간편하고 안전한 인증 기능.
+*   **개인별 Firestore 연동:** 각 사용자의 UID를 기반으로 기도 제목을 분리 저장하고 영구 보관합니다.
+*   **통합 홈 화면:** 로그인 직후 홈 화면에서 기도 등록과 본인의 전체 기도 목록을 한 번에 확인할 수 있는 직관적인 대시보드를 제공합니다.
+*   **기도 모드 구분:**
+    *   **Focused Prayer (집중 기도):** 특정 목표 날짜(D-Day)가 있는 긴급하거나 간절한 기도 제목.
+    *   **Yearly Prayer (연간 기도):** 연도별로 관리하는 장기적인 기도 제목.
+*   **응답 기록:** 기도 응답 시 날짜와 구체적인 응답 내용을 기록하는 기능.
+*   **수정 및 삭제:** 등록된 기도 제목을 언제든지 수정하거나 삭제할 수 있는 유연한 관리 기능.
 
-## Current Plan
+## Current Plan (Completed Steps)
 
-1.  **Update `index.html`:**
-    *   Set up the main structure with a title, a container for the lottery balls, and a "Generate Numbers" button.
-2.  **Update `style.css`:**
-    *   Apply styles for the overall page, container, lottery balls, and the button to match the design outlined above.
-3.  **Update `main.js`:**
-    *   Create the `LottoBall` web component.
-    *   Implement the logic to generate and display the 6 unique lottery numbers when the button is clicked.
+1.  **Google Login 구현:** Firebase Auth(v9 Compat) 연동 및 팝업 로그인 방식 적용.
+2.  **Firestore 연동:** `prayers` 컬렉션에 사용자별 데이터를 저장하고 불러오는 `PrayerStore` 클래스 구현.
+3.  **UI/UX 개편:**
+    *   상단 네비게이션 버튼(나의 기도 목록) 제거.
+    *   홈 화면 하단에 로그인한 사용자의 기도 목록 리스트를 자동으로 렌더링하도록 통합.
+    *   기도 아이템 템플릿 디자인 개선 (D-Day, 상태 배지, 응답 섹션 등).
+4.  **보안 및 최적화:** Firebase 콘솔의 승인된 도메인 설정 및 Firestore 보안 규칙 가이드 제공.
+
+## Future Tasks
+
+*   **알람 기능:** 집중 기도 시간에 맞춰 브라우저 알림 전송 기능 검토.
+*   **공유 기능:** '공개' 설정된 기도 제목을 타인과 나눌 수 있는 링크 생성 기능.
+*   **통계 보기:** 한 해 동안 받은 기도 응답을 리포트 형식으로 보여주는 기능.

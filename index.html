@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>기도 관리 서비스 - 내 마음의 기도</title>
+    <title>Prayer Web 기도노트</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
 </head>
@@ -12,7 +12,6 @@
         <nav class="top-nav">
             <div class="nav-brand" id="go-home">PRAYER WEB</div>
             <div class="nav-actions">
-                <button id="btn-view-list-nav" class="nav-btn">나의 기도 목록</button>
                 <div id="auth-section" class="auth-section">
                     <button id="btn-login" class="nav-btn primary">GOOGLE LOGIN</button>
                     <div id="user-profile" class="user-profile hidden">
@@ -48,7 +47,7 @@
                 <h1>우리의 기도가 멈추지 않도록 with PRAYER WEB <h1>
                 <p>구하라 그리하면 너희에게 주실 것이요 찾으라 그리하면 찾아낼 것이요 <br>문을 두드리라 그리하면 너희에게 열릴 것이니 (마7:7)</p>
             </header>
-            
+
             <div class="mode-selector">
                 <button class="mode-btn urgent" id="btn-urgent">
                     <span class="code-tag">Focused Prayer</span>
@@ -60,6 +59,16 @@
                     <h2>올해의 기도제목</h2>
                     <p>지난 삶의 기도제목과 응답을 기록하고, 앞으로의 기도계획을 세우세요.</p>
                 </button>
+            </div>
+
+            <!-- 로그인 시 나타날 리스트 영역 -->
+            <div id="home-list-section" class="list-container hidden">
+                <div class="list-header" style="margin: 3rem 0 1.5rem; border-bottom: 1px solid var(--border); padding-bottom: 1rem;">
+                    <h2 style="font-size: 1.5rem; font-weight: 700;">나의 기도 목록</h2>
+                </div>
+                <div id="home-prayer-list" class="prayer-list">
+                    <!-- 리스트 아이템이 여기에 렌더링됩니다 -->
+                </div>
             </div>
         </div>
     </template>

@@ -218,30 +218,50 @@ const UI = {
     },
 
     createPrayerItemTemplate(p) {
-        let dDayText = '';
-        if (p.type === 'urgent' && p.deadline) {
+        let typeBadge = '';
+        if (p.type === 'urgent') {
             const diff = new Date(p.deadline) - new Date();
             const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
-            dDayText = `<span class="badge" style="background: #ef4444; color: white;">D-${days >= 0 ? days : '+' + Math.abs(days)}</span>`;
-        } else if (p.type === 'annual') {
-            dDayText = `<span class="badge" style="background: #3b82f6; color: white;">${p.year} 연간</span>`;
+            typeBadge = `<span class="badge urgent">집중 기도 · D-${days >= 0 ? days : '+' + Math.abs(days)}</span>`;
+        } else {
+            typeBadge = `<span class="badge annual">${p.year} 연간 기도</span>`;
         }
 
+        const statusBadge = p.answered ? `<span class="badge success">응답 완료</span>` : '';
+
         return `
-            <div class="prayer-item" style="background: white; border: 1px solid #e2e8f0; padding: 1.5rem; border-radius: 12px; margin-bottom: 1rem;">
-                <div class="p-info">
-                    <div class="p-header" style="margin-bottom: 0.8rem; display: flex; gap: 0.5rem; align-items: center;">
-                        ${dDayText}
-                        ${p.answered ? '<span class="badge" style="background: #dcfce7; color: #166534;">응답 완료</span>' : ''}
-                        <span style="font-size: 0.8rem; color: #64748b; margin-left: auto;">${new Date(p.createdAt).toLocaleDateString()}</span>
+            <div class="prayer-item">
+                <div class="p-header">
+                    <div style="display: flex; gap: 0.5rem;">
+                        ${typeBadge}
+                        ${statusBadge}
                     </div>
-                    <h3 class="p-title" style="font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem; color: #1e293b; line-height: 1.4;">${p.title}</h3>
-                    <p class="p-cycle" style="font-size: 0.9rem; color: #64748b;">주기: ${p.cycle} | ${p.isPublic === 'public' ? '공개' : '비공개'}</p>
-                    ${p.answerContent ? `<div style="margin-top: 1rem; font-size: 0.9rem; color: #166534; background: #f0fdf4; padding: 0.8rem; border-radius: 8px; border-left: 4px solid #22c55e;">✨ 응답: ${p.answerContent}</div>` : ''}
+                    <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500;">
+                        ${new Date(p.createdAt).toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' })}
+                    </span>
                 </div>
-                <div class="p-actions" style="margin-top: 1.2rem; display: flex; gap: 0.5rem; justify-content: flex-end; border-top: 1px solid #f1f5f9; padding-top: 1rem;">
-                    <button class="action-btn btn-edit" data-id="${p.id}" style="padding: 0.4rem 0.8rem; font-size: 0.85rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 6px; cursor: pointer;">수정</button>
-                    <button class="action-btn btn-answer" data-id="${p.id}" style="padding: 0.4rem 0.8rem; font-size: 0.85rem; background: #eff6ff; color: #1d4ed8; border: 1px solid #bfdbfe; border-radius: 6px; cursor: pointer;">${p.answered ? '응답 수정' : '응답 기록'}</button>
+                
+                <h3 class="p-title">${p.title}</h3>
+                
+                <div class="p-cycle">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"></path><path d="M21 3v5h-5"></path></svg>
+                    ${p.cycle}
+                    <span style="margin-left: 0.5rem; opacity: 0.5;">|</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                    ${p.isPublic === 'public' ? '공개' : '비공개'}
+                </div>
+
+                ${p.answerContent ? `
+                    <div class="p-answer-box">
+                        <span>✨ God's Answer</span>
+                        ${p.answerContent}
+                        <div style="font-size: 0.75rem; margin-top: 0.5rem; opacity: 0.7;">${p.answerDate}</div>
+                    </div>
+                ` : ''}
+
+                <div class="p-actions">
+                    <button class="action-btn edit" data-id="${p.id}">수정하기</button>
+                    <button class="action-btn answer" data-id="${p.id}">${p.answered ? '응답 수정' : '응답 기록'}</button>
                 </div>
             </div>
         `;

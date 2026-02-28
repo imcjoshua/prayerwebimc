@@ -280,9 +280,21 @@ body {
 .close-btn {
     background: none;
     border: none;
-    font-size: 2rem;
+    font-size: 1.2rem;
     cursor: pointer;
-    color: #ccc;
+    color: oklch(70% 0.02 240);
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    transition: all 0.2s ease;
+}
+
+.close-btn:hover {
+    background-color: oklch(95% 0.02 240);
+    color: var(--text);
+    transform: rotate(90deg);
 }
 
 .modal-header {

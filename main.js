@@ -49,7 +49,9 @@ const UI = {
 
         document.getElementById('btn-urgent').onclick = () => this.renderForm('urgent');
         document.getElementById('btn-annual').onclick = () => this.renderForm('annual');
-        document.getElementById('btn-view-list').onclick = () => this.renderList();
+        
+        const listBtn = document.getElementById('btn-view-list');
+        if (listBtn) listBtn.onclick = () => this.renderList();
     },
 
     renderForm(type) {
@@ -277,7 +279,10 @@ const UI = {
 
 // 초기화
 document.getElementById('close-modal').onclick = () => UI.closeModal();
-document.getElementById('go-home').onclick = () => UI.renderHome();
+document.getElementById('go-home').onclick = () => {
+    UI.closeModal();
+    UI.renderHome();
+};
 window.onclick = (e) => { if (e.target === UI.modal) UI.closeModal(); };
 
 UI.renderHome();

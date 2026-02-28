@@ -24,12 +24,9 @@ class PrayerStore {
     async getAll(userId) {
         if (!userId) return [];
         try {
-            // userId가 일치하는 문서만 가져오기
             const snapshot = await db.collection(this.collection)
                 .where('userId', '==', userId)
                 .get();
-            
-            // 가져온 데이터를 생성일자 순으로 정렬
             return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
                 .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         } catch (error) {
@@ -50,7 +47,6 @@ class PrayerStore {
                 ...prayer
             };
             const docRef = await db.collection(this.collection).add(newPrayer);
-            console.log("데이터 저장 성공:", docRef.id);
             return { id: docRef.id, ...newPrayer };
         } catch (error) {
             console.error("데이터 저장 실패:", error);
@@ -61,7 +57,6 @@ class PrayerStore {
     async update(id, updatedFields) {
         try {
             await db.collection(this.collection).doc(id).update(updatedFields);
-            console.log("데이터 수정 성공:", id);
         } catch (error) {
             console.error("데이터 수정 실패:", error);
             throw error;
@@ -71,7 +66,6 @@ class PrayerStore {
     async delete(id) {
         try {
             await db.collection(this.collection).doc(id).delete();
-            console.log("데이터 삭제 성공:", id);
         } catch (error) {
             console.error("데이터 삭제 실패:", error);
             throw error;
@@ -88,9 +82,17 @@ const UI = {
     modal: document.getElementById('modal-overlay'),
 
     init() {
+        // 리다이렉트 결과 처리 (모바일용)
+        auth.getRedirectResult()
+            .then((result) => {
+                if (result.user) console.log("Redirect login success");
+            })
+            .catch((error) => {
+                console.error("Redirect login error:", error);
+            });
+
         // 인증 상태 변경 감지
         auth.onAuthStateChanged(user => {
-            console.log("Auth state changed:", user ? "Logged In" : "Logged Out");
             if (user) {
                 currentUser = user;
                 document.getElementById('btn-login').classList.add('hidden');
@@ -107,13 +109,22 @@ const UI = {
 
         // 네비게이션 이벤트
         document.getElementById('btn-login').onclick = () => {
-            auth.signInWithPopup(googleProvider)
-                .then(() => console.log("로그인 성공"))
-                .catch((error) => {
-                    console.error("로그인 에러:", error);
-                    alert("로그인 중 오류가 발생했습니다: " + error.message);
-                });
+            // 모바일 기기 체크 (단순 체크)
+            const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+            
+            if (isMobile) {
+                // 모바일은 리다이렉트 방식 사용 (403 에러 및 팝업 차단 방지)
+                auth.signInWithRedirect(googleProvider);
+            } else {
+                // 데스크톱은 팝업 방식 사용
+                auth.signInWithPopup(googleProvider)
+                    .catch((error) => {
+                        console.error("Login error:", error);
+                        alert("로그인 중 오류가 발생했습니다: " + error.message);
+                    });
+            }
         };
+
         document.getElementById('btn-logout').onclick = () => auth.signOut();
         document.getElementById('close-modal').onclick = () => this.closeModal();
         document.getElementById('go-home').onclick = () => this.renderHome();
@@ -122,6 +133,7 @@ const UI = {
 
     async renderHome() {
         const template = document.getElementById('home-view');
+        if (!template) return;
         this.main.innerHTML = '';
         this.main.appendChild(template.content.cloneNode(true));
 
@@ -134,23 +146,21 @@ const UI = {
             this.openFormModal('annual');
         };
 
-        // 로그인 상태인 경우 하단 리스트 로드
         if (currentUser) {
             const listSection = document.getElementById('home-list-section');
             const listContainer = document.getElementById('home-prayer-list');
             
             if (listSection && listContainer) {
                 listSection.classList.remove('hidden');
-                listContainer.innerHTML = '<div class="loading" style="padding: 2rem; text-align: center; color: #64748b;">기도 목록을 불러오는 중...</div>';
+                listContainer.innerHTML = '<div style="padding: 2rem; text-align: center; color: var(--text-muted);">기도 목록을 불러오는 중...</div>';
 
                 const prayers = await store.getAll(currentUser.uid);
                 
                 if (prayers.length === 0) {
-                    listContainer.innerHTML = '<p style="padding: 3rem; border: 1px dashed #e2e8f0; text-align:center; color: #64748b; border-radius: 12px;">아직 등록된 기도 제목이 없습니다. 위의 버튼을 눌러 첫 기도를 시작해보세요.</p>';
+                    listContainer.innerHTML = '<p style="padding: 2rem; border: 1px dashed var(--border); text-align:center; color: var(--text-muted); border-radius: 12px;">아직 등록된 기도 제목이 없습니다.</p>';
                 } else {
                     listContainer.innerHTML = prayers.map(p => this.createPrayerItemTemplate(p)).join('');
                     
-                    // 이벤트 바인딩
                     listContainer.querySelectorAll('.btn-edit').forEach(btn => {
                         btn.onclick = () => this.openEditModal(btn.dataset.id);
                     });
@@ -222,9 +232,9 @@ const UI = {
         if (p.type === 'urgent') {
             const diff = new Date(p.deadline) - new Date();
             const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
-            typeBadge = `<span class="badge urgent">집중 기도 · D-${days >= 0 ? days : '+' + Math.abs(days)}</span>`;
+            typeBadge = `<span class="badge urgent">집중 · D-${days >= 0 ? days : '+' + Math.abs(days)}</span>`;
         } else {
-            typeBadge = `<span class="badge annual">${p.year} 연간 기도</span>`;
+            typeBadge = `<span class="badge annual">${p.year} 연간</span>`;
         }
 
         const statusBadge = p.answered ? `<span class="badge success">응답 완료</span>` : '';
@@ -232,36 +242,36 @@ const UI = {
         return `
             <div class="prayer-item">
                 <div class="p-header">
-                    <div style="display: flex; gap: 0.5rem;">
+                    <div style="display: flex; gap: 0.4rem;">
                         ${typeBadge}
                         ${statusBadge}
                     </div>
-                    <span style="font-size: 0.8rem; color: var(--text-muted); font-weight: 500;">
-                        ${new Date(p.createdAt).toLocaleDateString('ko-KR', { month: 'long', day: 'numeric' })}
+                    <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 500;">
+                        ${new Date(p.createdAt).toLocaleDateString('ko-KR', { month: 'numeric', day: 'numeric' })}
                     </span>
                 </div>
                 
                 <h3 class="p-title">${p.title}</h3>
                 
                 <div class="p-cycle">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"></path><path d="M21 3v5h-5"></path></svg>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"></path><path d="M21 3v5h-5"></path></svg>
                     ${p.cycle}
-                    <span style="margin-left: 0.5rem; opacity: 0.5;">|</span>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                    <span style="margin-left: 0.4rem; opacity: 0.5;">|</span>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
                     ${p.isPublic === 'public' ? '공개' : '비공개'}
                 </div>
 
                 ${p.answerContent ? `
                     <div class="p-answer-box">
                         <span>✨ God's Answer</span>
-                        ${p.answerContent}
-                        <div style="font-size: 0.75rem; margin-top: 0.5rem; opacity: 0.7;">${p.answerDate}</div>
+                        <div style="font-size: 0.9rem;">${p.answerContent}</div>
+                        <div style="font-size: 0.7rem; margin-top: 0.4rem; opacity: 0.7;">${p.answerDate}</div>
                     </div>
                 ` : ''}
 
                 <div class="p-actions">
-                    <button class="action-btn edit" data-id="${p.id}">수정하기</button>
-                    <button class="action-btn answer" data-id="${p.id}">${p.answered ? '응답 수정' : '응답 기록'}</button>
+                    <button class="action-btn edit btn-edit" data-id="${p.id}">수정</button>
+                    <button class="action-btn answer btn-answer" data-id="${p.id}">${p.answered ? '응답 수정' : '응답 기록'}</button>
                 </div>
             </div>
         `;
@@ -281,7 +291,7 @@ const UI = {
                     <input type="text" name="cycle" value="${p.cycle}" required>
                 </div>
                 <button type="submit" class="submit-btn">수정 완료</button>
-                <button type="button" id="btn-delete" style="margin-top: 0.8rem; background: #fee2e2; color: #991b1b; border: 1px solid #f87171; width: 100%; padding: 0.8rem; border-radius: 8px; cursor: pointer;">기도 제목 삭제</button>
+                <button type="button" id="btn-delete" style="margin-top: 0.8rem; background: #fee2e2; color: #991b1b; border: none; width: 100%; padding: 0.8rem; border-radius: 10px; cursor: pointer; font-weight: 600;">기도 제목 삭제</button>
             </form>
         `);
 

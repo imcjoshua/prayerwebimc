@@ -191,8 +191,8 @@ const UI = {
                 <div class="input-group">
                     <label>공개 여부</label>
                     <select name="isPublic">
-                        <option value="private">비공개 (개인용)</option>
-                        <option value="public">공개 (나눔용)</option>
+                        <option value="private">비공개 기도</option>
+                        <option value="public">공개 기도</option>
                     </select>
                 </div>
                 <button type="submit" class="submit-btn">저장하기</button>

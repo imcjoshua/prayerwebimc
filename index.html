@@ -3,54 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>기도 관리 서비스 - 내 마음의 기도</title>
+    <title>Prayer Manager - Console</title>
     <link rel="stylesheet" href="style.css">
-    <!-- Pretendard 폰트 적용 -->
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
 </head>
 <body>
     <div id="app">
-        <!-- 메인 헤더 -->
-        <header class="main-header">
-            <div class="logo" id="go-home">🙏 Prayer Manager</div>
-        </header>
+        <nav class="top-nav">
+            <div class="nav-brand" id="go-home">PRAYER_LOG_v1.0</div>
+            <div class="nav-actions">
+                <button id="btn-view-list-nav" class="nav-btn">LIST.ALL()</button>
+            </div>
+        </nav>
 
         <main id="main-content">
-            <!-- 화면들이 여기에 동적으로 로드됩니다 -->
+            <!-- 콘텐츠가 동적으로 로드됩니다 -->
         </main>
 
-        <!-- 모달 레이어 (수정/응답 입력용) -->
+        <!-- 글로벌 모달 (입력/수정/응답 통합) -->
         <div id="modal-overlay" class="modal-overlay hidden">
-            <div class="modal-card">
-                <header class="modal-header">
-                    <h3 id="modal-title"></h3>
-                    <button id="close-modal" class="close-btn">&times;</button>
-                </header>
+            <div class="modal-window">
+                <div class="modal-header">
+                    <span class="modal-id" id="modal-title">NEW_ENTRY</span>
+                    <button id="close-modal" class="close-x">TERMINATE</button>
+                </div>
                 <div id="modal-body" class="modal-body">
-                    <!-- 모달 내용이 여기에 주입됩니다 -->
+                    <!-- 폼 내용 주입 -->
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- 템플릿 정의 -->
+    <!-- 홈 뷰 템플릿 -->
     <template id="home-view">
-        <div class="home-container">
-            <h1 class="hero-text">오늘 당신의 마음은 어디를 향하나요?</h1>
-            <div class="button-grid">
-                <button class="choice-card urgent" id="btn-urgent">
-                    <span class="icon">🔥</span>
-                    <div class="text-wrap">
-                        <h2>지금 간절한 기도제목이 있으신가요?</h2>
-                        <p>특별한 기간 동안 집중적으로 기도하기</p>
-                    </div>
+        <div class="console-home">
+            <header class="console-header">
+                <h1>SELECT_PRAYER_MODE</h1>
+                <p>시스템에 새로운 기도 로그를 생성하십시오.</p>
+            </header>
+            
+            <div class="mode-selector">
+                <button class="mode-btn urgent" id="btn-urgent">
+                    <span class="code-tag">MODE:URGENT</span>
+                    <h2>지금 간절한 기도제목</h2>
+                    <p>기한이 정해진 집중 기도</p>
                 </button>
-                <button class="choice-card annual" id="btn-annual">
-                    <span class="icon">📅</span>
-                    <div class="text-wrap">
-                        <h2>올해의 기도제목을 기록하세요</h2>
-                        <p>한 해의 소망과 과거의 은혜를 정리하기</p>
-                    </div>
+                <button class="mode-btn annual" id="btn-annual">
+                    <span class="code-tag">MODE:ANNUAL</span>
+                    <h2>올해의 기도제목</h2>
+                    <p>연간 목표 및 과거 기록 관리</p>
                 </button>
             </div>
         </div>

@@ -29,7 +29,7 @@ class PrayerStore {
                 .where('userId', '==', userId)
                 .get();
             
-            // 가져온 데이터를 생성일자 순으로 정렬 (클라이언트 단에서 정렬하거나 인덱스 설정 필요)
+            // 가져온 데이터를 생성일자 순으로 정렬
             return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
                 .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
         } catch (error) {
@@ -82,74 +82,6 @@ class PrayerStore {
 const store = new PrayerStore();
 let currentUser = null;
 
-// Firebase Configuration (사용자 설정 필요)
-const firebaseConfig = {
-    apiKey: "AIzaSyDgW90Th4xwTkTrcbjgLhwbXcHz_7bKEdM",
-  authDomain: "prayerwebimc.firebaseapp.com",
-  projectId: "prayerwebimc",
-  storageBucket: "prayerwebimc.firebasestorage.app",
-  messagingSenderId: "510995765037",
-  appId: "1:510995765037:web:15b1b7c62126e87f65a5a4",
-  measurementId: "G-11Z35RDV5N"
-};
-
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.firestore();
-const googleProvider = new firebase.auth.GoogleAuthProvider();
-
-// 데이터 관리 클래스 (Firestore 기반)
-class PrayerStore {
-    constructor() {
-        this.collection = 'prayers';
-    }
-
-    async getAll(userId) {
-        if (!userId) return [];
-        try {
-            const snapshot = await db.collection(this.collection)
-                .where('userId', '==', userId)
-                .get();
-            return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
-                .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-        } catch (error) {
-            console.error("데이터 불러오기 실패:", error);
-            return [];
-        }
-    }
-
-    async save(prayer, userId) {
-        if (!userId) return null;
-        try {
-            const newPrayer = {
-                userId: userId,
-                createdAt: new Date().toISOString(),
-                answered: false,
-                answerContent: '',
-                answerDate: '',
-                ...prayer
-            };
-            const docRef = await db.collection(this.collection).add(newPrayer);
-            return { id: docRef.id, ...newPrayer };
-        } catch (error) {
-            console.error("데이터 저장 실패:", error);
-            throw error;
-        }
-    }
-
-    async update(id, updatedFields) {
-        await db.collection(this.collection).doc(id).update(updatedFields);
-    }
-
-    async delete(id) {
-        await db.collection(this.collection).doc(id).delete();
-    }
-}
-
-const store = new PrayerStore();
-let currentUser = null;
-
 // UI 관리자
 const UI = {
     main: document.getElementById('main-content'),
@@ -158,6 +90,7 @@ const UI = {
     init() {
         // 인증 상태 변경 감지
         auth.onAuthStateChanged(user => {
+            console.log("Auth state changed:", user ? "Logged In" : "Logged Out");
             if (user) {
                 currentUser = user;
                 document.getElementById('btn-login').classList.add('hidden');
@@ -206,23 +139,25 @@ const UI = {
             const listSection = document.getElementById('home-list-section');
             const listContainer = document.getElementById('home-prayer-list');
             
-            listSection.classList.remove('hidden');
-            listContainer.innerHTML = '<div class="loading" style="padding: 2rem; text-align: center; color: #64748b;">기도 목록을 불러오는 중...</div>';
+            if (listSection && listContainer) {
+                listSection.classList.remove('hidden');
+                listContainer.innerHTML = '<div class="loading" style="padding: 2rem; text-align: center; color: #64748b;">기도 목록을 불러오는 중...</div>';
 
-            const prayers = await store.getAll(currentUser.uid);
-            
-            if (prayers.length === 0) {
-                listContainer.innerHTML = '<p style="padding: 3rem; border: 1px dashed #e2e8f0; text-align:center; color: #64748b; border-radius: 12px;">아직 등록된 기도 제목이 없습니다. 위의 버튼을 눌러 첫 기도를 시작해보세요.</p>';
-            } else {
-                listContainer.innerHTML = prayers.map(p => this.createPrayerItemTemplate(p)).join('');
+                const prayers = await store.getAll(currentUser.uid);
                 
-                // 이벤트 바인딩
-                listContainer.querySelectorAll('.btn-edit').forEach(btn => {
-                    btn.onclick = () => this.openEditModal(btn.dataset.id);
-                });
-                listContainer.querySelectorAll('.btn-answer').forEach(btn => {
-                    btn.onclick = () => this.openAnswerModal(btn.dataset.id);
-                });
+                if (prayers.length === 0) {
+                    listContainer.innerHTML = '<p style="padding: 3rem; border: 1px dashed #e2e8f0; text-align:center; color: #64748b; border-radius: 12px;">아직 등록된 기도 제목이 없습니다. 위의 버튼을 눌러 첫 기도를 시작해보세요.</p>';
+                } else {
+                    listContainer.innerHTML = prayers.map(p => this.createPrayerItemTemplate(p)).join('');
+                    
+                    // 이벤트 바인딩
+                    listContainer.querySelectorAll('.btn-edit').forEach(btn => {
+                        btn.onclick = () => this.openEditModal(btn.dataset.id);
+                    });
+                    listContainer.querySelectorAll('.btn-answer').forEach(btn => {
+                        btn.onclick = () => this.openAnswerModal(btn.dataset.id);
+                    });
+                }
             }
         }
     },

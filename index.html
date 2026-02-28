@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+1<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -11,6 +11,32 @@
         <h1>Lotto Number Generator</h1>
         <div id="lotto-numbers" class="lotto-numbers-container"></div>
         <button id="generate-btn">Generate Numbers</button>
+
+        <section class="prayer-section">
+            <div class="card">
+                <h2>🙏 기도 제목 나누기</h2>
+                <p>여러분의 소중한 기도 제목을 보내주시면 함께 기도하겠습니다.</p>
+                
+                <form action="https://formspree.io/f/xeeldvel" method="POST" id="prayer-form">
+                    <div class="input-group">
+                        <label for="name">이름 (성함)</label>
+                        <input type="text" name="name" id="name" placeholder="이름을 입력하세요" required>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="email">이메일</label>
+                        <input type="email" name="_replyto" id="email" placeholder="email@example.com" required>
+                    </div>
+                    
+                    <div class="input-group">
+                        <label for="message">기도 제목</label>
+                        <textarea name="message" id="message" rows="5" placeholder="나누고 싶은 기도 내용을 적어주세요..." required></textarea>
+                    </div>
+                    
+                    <button type="submit" class="submit-btn">기도 제목 보내기</button>
+                </form>
+            </div>
+        </section>
     </div>
     <script src="main.js"></script>
 </body>

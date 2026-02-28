@@ -10,11 +10,100 @@ body {
 
 .container {
     text-align: center;
+    max-width: 800px;
+    width: 90%;
+    margin: 2rem auto;
 }
 
 h1 {
     font-size: 3rem;
     font-weight: 900;
+    margin-bottom: 1rem;
+}
+
+/* Prayer Section Styles */
+.prayer-section {
+    margin-top: 4rem;
+    container-type: inline-size;
+}
+
+.card {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    border-radius: 1.5rem;
+    padding: 2.5rem;
+    box-shadow: 
+        0 10px 25px -5px rgba(0, 0, 0, 0.1),
+        0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    text-align: left;
+}
+
+.card h2 {
+    font-size: 1.8rem;
+    margin-bottom: 0.5rem;
+    color: oklch(40% 0.15 250);
+}
+
+.card p {
+    color: oklch(50% 0.05 250);
+    margin-bottom: 2rem;
+}
+
+.input-group {
+    margin-bottom: 1.5rem;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: oklch(30% 0.05 250);
+}
+
+.input-group input, 
+.input-group textarea {
+    width: 100%;
+    padding: 1rem;
+    border-radius: 0.75rem;
+    border: 2px solid oklch(90% 0.02 250);
+    background: white;
+    font-family: inherit;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+    box-sizing: border-box;
+}
+
+.input-group input:focus, 
+.input-group textarea:focus {
+    outline: none;
+    border-color: oklch(65% 0.2 260);
+    box-shadow: 0 0 0 4px oklch(65% 0.2 260 / 15%);
+}
+
+.submit-btn {
+    width: 100%;
+    padding: 1.2rem;
+    border: none;
+    border-radius: 0.75rem;
+    background: oklch(65% 0.2 260);
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-top: 1rem;
+}
+
+.submit-btn:hover {
+    background: oklch(60% 0.2 260);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px oklch(60% 0.2 260 / 30%);
+}
+
+.submit-btn:active {
+    transform: translateY(0);
 }
 
 .lotto-numbers-container {

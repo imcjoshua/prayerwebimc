@@ -1,148 +1,137 @@
 body {
-    font-family: sans-serif;
-    display: grid;
-    place-items: center;
+    font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     min-height: 100vh;
-    background-color: oklch(98.2% 0.01 240);
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    margin: 0;
+    background-color: oklch(98% 0.01 240);
+    background-image: 
+        radial-gradient(at 0% 0%, oklch(95% 0.05 200) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, oklch(95% 0.05 300) 0px, transparent 50%),
+        url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
     color: oklch(20% 0.01 240);
 }
 
 .container {
-    text-align: center;
-    max-width: 800px;
+    max-width: 600px;
     width: 90%;
     margin: 2rem auto;
 }
 
-h1 {
-    font-size: 3rem;
-    font-weight: 900;
-    margin-bottom: 1rem;
-}
-
 /* Prayer Section Styles */
 .prayer-section {
-    margin-top: 4rem;
     container-type: inline-size;
 }
 
 .card {
     background: rgba(255, 255, 255, 0.7);
-    backdrop-filter: blur(10px);
-    border-radius: 1.5rem;
-    padding: 2.5rem;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 2rem;
+    padding: 3rem;
     box-shadow: 
-        0 10px 25px -5px rgba(0, 0, 0, 0.1),
-        0 8px 10px -6px rgba(0, 0, 0, 0.1);
-    border: 1px solid rgba(255, 255, 255, 0.5);
+        0 20px 40px -10px rgba(0, 0, 0, 0.05),
+        0 10px 15px -5px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.6);
     text-align: left;
 }
 
-.card h2 {
-    font-size: 1.8rem;
-    margin-bottom: 0.5rem;
-    color: oklch(40% 0.15 250);
+h1 {
+    font-size: 2.2rem;
+    font-weight: 800;
+    margin: 0 0 0.75rem 0;
+    color: oklch(35% 0.1 250);
+    letter-spacing: -0.02em;
 }
 
-.card p {
-    color: oklch(50% 0.05 250);
-    margin-bottom: 2rem;
+p {
+    color: oklch(45% 0.05 250);
+    margin-bottom: 2.5rem;
+    line-height: 1.6;
+    font-size: 1.1rem;
 }
 
 .input-group {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.75rem;
 }
 
 .input-group label {
     display: block;
-    margin-bottom: 0.5rem;
-    font-weight: 600;
-    font-size: 0.9rem;
+    margin-bottom: 0.6rem;
+    font-weight: 700;
+    font-size: 0.95rem;
     color: oklch(30% 0.05 250);
 }
 
 .input-group input, 
 .input-group textarea {
     width: 100%;
-    padding: 1rem;
-    border-radius: 0.75rem;
-    border: 2px solid oklch(90% 0.02 250);
+    padding: 1.1rem;
+    border-radius: 1rem;
+    border: 2px solid oklch(92% 0.02 250);
     background: white;
     font-family: inherit;
     font-size: 1rem;
-    transition: all 0.2s ease;
+    transition: all 0.25s ease;
     box-sizing: border-box;
+    color: oklch(20% 0.02 250);
+}
+
+.input-group input::placeholder, 
+.input-group textarea::placeholder {
+    color: oklch(80% 0.02 250);
 }
 
 .input-group input:focus, 
 .input-group textarea:focus {
     outline: none;
-    border-color: oklch(65% 0.2 260);
-    box-shadow: 0 0 0 4px oklch(65% 0.2 260 / 15%);
+    border-color: oklch(65% 0.18 260);
+    box-shadow: 0 0 0 5px oklch(65% 0.18 260 / 12%);
+    background: white;
 }
 
 .submit-btn {
     width: 100%;
-    padding: 1.2rem;
+    padding: 1.3rem;
     border: none;
-    border-radius: 0.75rem;
-    background: oklch(65% 0.2 260);
+    border-radius: 1rem;
+    background: linear-gradient(135deg, oklch(65% 0.2 260), oklch(55% 0.2 270));
     color: white;
-    font-size: 1.1rem;
-    font-weight: 700;
+    font-size: 1.15rem;
+    font-weight: 800;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     margin-top: 1rem;
+    box-shadow: 0 8px 15px -3px oklch(65% 0.2 260 / 25%);
 }
 
 .submit-btn:hover {
-    background: oklch(60% 0.2 260);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px oklch(60% 0.2 260 / 30%);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 20px -5px oklch(65% 0.2 260 / 35%);
+    filter: brightness(1.05);
 }
 
 .submit-btn:active {
-    transform: translateY(0);
+    transform: translateY(-1px);
 }
 
-.lotto-numbers-container {
-    display: flex;
-    gap: 1rem;
-    margin: 2rem 0;
-    flex-wrap: wrap;
-    justify-content: center;
+.footer {
+    text-align: center;
+    margin-top: 2rem;
+    padding-bottom: 2rem;
 }
 
-lotto-ball {
-    --ball-color: oklch(70% 0.25 40);
+.footer p {
+    font-size: 0.85rem;
+    color: oklch(70% 0.02 250);
 }
 
-lotto-ball[data-color="yellow"] { --ball-color: oklch(85% 0.25 85); }
-lotto-ball[data-color="blue"] { --ball-color: oklch(70% 0.25 240); }
-lotto-ball[data-color="red"] { --ball-color: oklch(70% 0.25 20); }
-lotto-ball[data-color="grey"] { --ball-color: oklch(80% 0.01 240); }
-lotto-ball[data-color="green"] { --ball-color: oklch(70% 0.25 145); }
-
-#generate-btn {
-    padding: 1rem 2rem;
-    font-size: 1.2rem;
-    border: none;
-    border-radius: 0.5rem;
-    background-color: oklch(65% 0.25 260);
-    color: white;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    box-shadow:
-        0 0 0.5rem oklch(65% 0.25 260 / 50%),
-        0 0 1rem oklch(65% 0.25 260 / 30%),
-        0 0 2rem oklch(65% 0.25 260 / 20%);
-}
-
-#generate-btn:hover {
-    transform: translateY(-2px);
-    box-shadow:
-        0 0 1rem oklch(65% 0.25 260 / 70%),
-        0 0 2rem oklch(65% 0.25 260 / 50%),
-        0 0 4rem oklch(65% 0.25 260 / 30%);
+@media (max-width: 480px) {
+    .card {
+        padding: 2rem 1.5rem;
+    }
+    h1 {
+        font-size: 1.8rem;
+    }
 }

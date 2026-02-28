@@ -1,21 +1,17 @@
-1<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="ko">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lotto Number Generator</title>
+    <title>기도 제목 나누기 - 함께 기도하겠습니다</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
-        <h1>Lotto Number Generator</h1>
-        <div id="lotto-numbers" class="lotto-numbers-container"></div>
-        <button id="generate-btn">Generate Numbers</button>
-
         <section class="prayer-section">
             <div class="card">
-                <h2>🙏 기도 제목 나누기</h2>
-                <p>여러분의 소중한 기도 제목을 보내주시면 함께 기도하겠습니다.</p>
+                <h1>🙏 기도 제목 나누기</h1>
+                <p>여러분의 소중한 기도 제목을 보내주시면 정성을 다해 함께 기도하겠습니다.</p>
                 
                 <form action="https://formspree.io/f/xeeldvel" method="POST" id="prayer-form">
                     <div class="input-group">
@@ -24,18 +20,21 @@
                     </div>
                     
                     <div class="input-group">
-                        <label for="email">이메일</label>
+                        <label for="email">이메일 (답변 받으실 주소)</label>
                         <input type="email" name="_replyto" id="email" placeholder="email@example.com" required>
                     </div>
                     
                     <div class="input-group">
                         <label for="message">기도 제목</label>
-                        <textarea name="message" id="message" rows="5" placeholder="나누고 싶은 기도 내용을 적어주세요..." required></textarea>
+                        <textarea name="message" id="message" rows="8" placeholder="나누고 싶은 기도 내용을 상세히 적어주세요..." required></textarea>
                     </div>
                     
                     <button type="submit" class="submit-btn">기도 제목 보내기</button>
                 </form>
             </div>
+            <footer class="footer">
+                <p>© 2026 기도 나눔 서비스. 모든 기도 제목은 소중히 간직됩니다.</p>
+            </footer>
         </section>
     </div>
     <script src="main.js"></script>

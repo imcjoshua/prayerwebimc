@@ -1,11 +1,12 @@
 // Firebase Configuration (사용자 설정 필요)
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_PROJECT_ID.appspot.com",
-    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-    appId: "YOUR_APP_ID"
+    apiKey: "AIzaSyDgW90Th4xwTkTrcbjgLhwbXcHz_7bKEdM",
+  authDomain: "prayerwebimc.firebaseapp.com",
+  projectId: "prayerwebimc",
+  storageBucket: "prayerwebimc.firebasestorage.app",
+  messagingSenderId: "510995765037",
+  appId: "1:510995765037:web:15b1b7c62126e87f65a5a4",
+  measurementId: "G-11Z35RDV5N"
 };
 
 // Initialize Firebase

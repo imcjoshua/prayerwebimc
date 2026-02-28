@@ -3,41 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>기도 제목 나누기 - 함께 기도하겠습니다</title>
+    <title>기도 관리 서비스 - 내 마음의 기도</title>
     <link rel="stylesheet" href="style.css">
+    <!-- Pretendard 폰트 적용 -->
+    <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css" />
 </head>
 <body>
-    <div class="container">
-        <section class="prayer-section">
-            <div class="card">
-                <h1>🙏 기도 제목 나누기</h1>
-                <p>여러분의 소중한 기도 제목을 보내주시면 정성을 다해 함께 기도하겠습니다.</p>
-                
-                <form action="https://formspree.io/f/xeeldvel" method="POST" id="prayer-form">
-                    <div class="input-group">
-                        <label for="name">이름 (성함)</label>
-                        <input type="text" name="name" id="name" placeholder="이름을 입력하세요" required>
-                    </div>
-                    
-                    <div class="input-group">
-                        <label for="email">이메일 (답변 받으실 주소)</label>
-                        <input type="email" name="_replyto" id="email" placeholder="email@example.com" required>
-                    </div>
-                    
-                    <div class="input-group">
-                        <label for="message">기도 제목</label>
-                        <textarea name="message" id="message" rows="8" placeholder="나누고 싶은 기도 내용을 상세히 적어주세요..." required></textarea>
-                    </div>
-                    
-                    <button type="submit" class="submit-btn" id="submit-btn">기도 제목 보내기</button>
-                    <div id="status" class="status-msg"></div>
-                </form>
+    <div id="app">
+        <!-- 메인 헤더 -->
+        <header class="main-header">
+            <div class="logo" id="go-home">🙏 Prayer Manager</div>
+        </header>
+
+        <main id="main-content">
+            <!-- 화면들이 여기에 동적으로 로드됩니다 -->
+        </main>
+
+        <!-- 모달 레이어 (수정/응답 입력용) -->
+        <div id="modal-overlay" class="modal-overlay hidden">
+            <div class="modal-card">
+                <header class="modal-header">
+                    <h3 id="modal-title">수정하기</h3>
+                    <button id="close-modal" class="close-btn">&times;</button>
+                </header>
+                <div id="modal-body" class="modal-body">
+                    <!-- 모달 내용이 여기에 주입됩니다 -->
+                </div>
             </div>
-            <footer class="footer">
-                <p>© 2026 기도 나눔 서비스. 모든 기도 제목은 소중히 간직됩니다.</p>
-            </footer>
-        </section>
+        </div>
     </div>
+
+    <!-- 템플릿 정의 -->
+    <template id="home-view">
+        <div class="home-container">
+            <h1 class="hero-text">오늘 당신의 마음은 어디를 향하나요?</h1>
+            <div class="button-grid">
+                <button class="choice-card urgent" id="btn-urgent">
+                    <span class="icon">🔥</span>
+                    <div class="text-wrap">
+                        <h2>지금 간절한 기도제목이 있으신가요?</h2>
+                        <p>특별한 기간 동안 집중적으로 기도하기</p>
+                    </div>
+                </button>
+                <button class="choice-card annual" id="btn-annual">
+                    <span class="icon">📅</span>
+                    <div class="text-wrap">
+                        <h2>올해의 기도제목을 기록하세요</h2>
+                        <p>한 해의 소망과 과거의 은혜를 정리하기</p>
+                    </div>
+                </button>
+            </div>
+            <div class="list-link-wrap">
+                <button id="btn-view-list" class="secondary-btn">나의 기도 목록 확인하기 →</button>
+            </div>
+        </div>
+    </template>
+
     <script src="main.js"></script>
 </body>
 </html>

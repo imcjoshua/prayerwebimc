@@ -116,6 +116,28 @@ p {
     transform: translateY(-1px);
 }
 
+.status-msg {
+    margin-top: 1.5rem;
+    padding: 1rem;
+    border-radius: 0.75rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-align: center;
+    display: none;
+}
+
+.status-msg.success {
+    display: block;
+    background-color: oklch(95% 0.05 150);
+    color: oklch(40% 0.15 150);
+}
+
+.status-msg.error {
+    display: block;
+    background-color: oklch(95% 0.05 20);
+    color: oklch(45% 0.15 20);
+}
+
 .footer {
     text-align: center;
     margin-top: 2rem;

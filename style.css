@@ -1,1 +1,59 @@
-/* Add styles here */
+body {
+    font-family: sans-serif;
+    display: grid;
+    place-items: center;
+    min-height: 100vh;
+    background-color: oklch(98.2% 0.01 240);
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    color: oklch(20% 0.01 240);
+}
+
+.container {
+    text-align: center;
+}
+
+h1 {
+    font-size: 3rem;
+    font-weight: 900;
+}
+
+.lotto-numbers-container {
+    display: flex;
+    gap: 1rem;
+    margin: 2rem 0;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+lotto-ball {
+    --ball-color: oklch(70% 0.25 40);
+}
+
+lotto-ball[data-color="yellow"] { --ball-color: oklch(85% 0.25 85); }
+lotto-ball[data-color="blue"] { --ball-color: oklch(70% 0.25 240); }
+lotto-ball[data-color="red"] { --ball-color: oklch(70% 0.25 20); }
+lotto-ball[data-color="grey"] { --ball-color: oklch(80% 0.01 240); }
+lotto-ball[data-color="green"] { --ball-color: oklch(70% 0.25 145); }
+
+#generate-btn {
+    padding: 1rem 2rem;
+    font-size: 1.2rem;
+    border: none;
+    border-radius: 0.5rem;
+    background-color: oklch(65% 0.25 260);
+    color: white;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow:
+        0 0 0.5rem oklch(65% 0.25 260 / 50%),
+        0 0 1rem oklch(65% 0.25 260 / 30%),
+        0 0 2rem oklch(65% 0.25 260 / 20%);
+}
+
+#generate-btn:hover {
+    transform: translateY(-2px);
+    box-shadow:
+        0 0 1rem oklch(65% 0.25 260 / 70%),
+        0 0 2rem oklch(65% 0.25 260 / 50%),
+        0 0 4rem oklch(65% 0.25 260 / 30%);
+}
